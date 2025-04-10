@@ -1,0 +1,23 @@
+#include <iostream>
+#include <string>
+
+int main() {
+    std::string name;
+    std::string password;
+
+    // Prompt for name
+    std::cout << "Enter your name: ";
+    std::getline(std::cin, name); // Allows for names with spaces
+
+    // Greeting
+    std::cout << "Hello, " << name << "! Welcome to C++!" << std::endl;
+
+    // Ask for password
+    std::cout << "Please enter your password: ";
+    std::getline(std::cin, password); // Read the password as a full line too
+
+    // Response to the question
+    std::cout << name << "! You should never share your password! (" << password << ")" << std::endl;
+
+    return 0;
+}
