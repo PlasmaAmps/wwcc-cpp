@@ -1,0 +1,29 @@
+#include <iostream>
+#include <iomanip> // for std::fixed and std::setprecision
+
+int main() {
+    double temperature;
+    char unit;
+
+    std::cout << "Temperature Converter\n";
+    std::cout << "Enter temperature value: ";
+    std::cin >> temperature;
+
+    std::cout << "Enter unit (C for Celsius, F for Fahrenheit): ";
+    std::cin >> unit;
+
+    // Convert based on unit
+    if (unit == 'C' || unit == 'c') {
+        double fahrenheit = (temperature * 9.0 / 5.0) + 32.0;
+        std::cout << std::fixed << std::setprecision(2);
+        std::cout << temperature << "°C is equal to " << fahrenheit << "°F\n";
+    } else if (unit == 'F' || unit == 'f') {
+        double celsius = (temperature - 32.0) * 5.0 / 9.0;
+        std::cout << std::fixed << std::setprecision(2);
+        std::cout << temperature << "°F is equal to " << celsius << "°C\n";
+    } else {
+        std::cout << "Invalid unit entered. Please use 'C' or 'F'.\n";
+    }
+
+    return 0;
+}
