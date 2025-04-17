@@ -1,0 +1,42 @@
+#include <iostream>
+#include <cstdlib>  // For rand() function
+#include <ctime>    // For time() function
+#include <iomanip>  // For std::setprecision
+using namespace std;
+
+int main() {
+    // Seed the random number generator
+    srand(time(0));
+
+    int flips;
+    int heads = 0;
+    int tails = 0;
+
+    cout << "Coin Flip Simulator" << endl;
+    cout << "How many flips would you like to simulate? ";
+    cin >> flips;
+
+    cout << "Simulating " << flips << " coin flips...\n" << endl;
+
+    // Flip loop
+    for (int i = 0; i < flips; i++) {
+        int result = rand() % 2;  // 0 or 1
+        if (result == 0) {
+            heads++;
+        } else {
+            tails++;
+        }
+    }
+
+    // Calculate percentages
+    double percentHeads = (static_cast<double>(heads) / flips) * 100;
+    double percentTails = (static_cast<double>(tails) / flips) * 100;
+
+    // Display results
+    cout << fixed << setprecision(2);  // Format output to 2 decimal places
+    cout << "Results:" << endl;
+    cout << "Heads: " << heads << " (" << percentHeads << "%)" << endl;
+    cout << "Tails: " << tails << " (" << percentTails << "%)" << endl;
+
+    return 0;
+}
