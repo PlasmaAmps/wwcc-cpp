@@ -1,0 +1,50 @@
+#include <iostream>
+#include <iomanip>  
+using namespace std;
+
+int main() {
+    int start, end;
+
+    cout << "Multiplication Table Generator" << endl << endl;
+
+    cout << "Enter starting number: ";
+    cin >> start;
+
+    cout << "Enter ending number: ";
+    cin >> end;
+
+    // Validate input
+    if (start > end) {
+        cout << "Error: Starting number must be less than ending number." << endl;
+        return 1;
+    }
+
+    cout << endl;
+
+    const int width = 4;
+
+    // Print column headers
+    cout << setw(width) << " " << " |";
+    for (int col = start; col <= end; ++col) {
+        cout << setw(width) << col << " |";
+    }
+    cout << endl;
+
+    // Print aligned separator line
+    cout << setfill('-') << setw(width) << "" << "-+";
+    for (int col = start; col <= end; ++col) {
+        cout << setw(width) << "" << "-+";
+    }
+    cout << setfill(' ') << endl;  // Reset fill to space for the table
+
+    // Print multiplication table
+    for (int row = start; row <= end; ++row) {
+        cout << setw(width) << row << " |";
+        for (int col = start; col <= end; ++col) {
+            cout << setw(width) << row * col << " |";
+        }
+        cout << endl;
+    }
+
+    return 0;
+}
