@@ -1,0 +1,220 @@
+#include <iostream>
+#include <string>
+#include <limits> // for input validation
+using namespace std;
+
+// Structs
+struct Date {
+    int day;
+    int month;
+    int year;
+};
+
+struct Task {
+    string title;
+    string description;
+    int priority; // 1 (low) to 5 (high)
+    Date dueDate;
+    bool completed;
+};
+
+// Global task list
+const int MAX_TASKS = 100;
+Task tasks[MAX_TASKS];
+int taskCount = 0;
+
+// Function Prototypes
+void addTask();
+void displayTasks();
+void markTask();
+void filterTasks();
+void productivityReport();
+void printTask(const Task& task);
+bool compareDates(const Date& a, const Date& b);
+bool operator==(const Date& a, const Date& b);
+void sortTasks();
+
+int main() {
+    int choice;
+
+    do {
+        cout << "\n--- Task Manager ---\n";
+        cout << "1. Add New Task\n";
+        cout << "2. Display All Tasks\n";
+        cout << "3. Mark Task Complete/Incomplete\n";
+        cout << "4. Show Tasks by Status\n";
+        cout << "5. Productivity Report\n";
+        cout << "6. Sort Tasks\n";
+        cout << "7. Exit\n";
+        cout << "Choose an option: ";
+        cin >> choice;
+
+        // Input validation
+        while (cin.fail() || choice < 1 || choice > 7) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Try again: ";
+            cin >> choice;
+        }
+
+        switch (choice) {
+            case 1: addTask(); break;
+            case 2: displayTasks(); break;
+            case 3: markTask(); break;
+            case 4: filterTasks(); break;
+            case 5: productivityReport(); break;
+            case 6: sortTasks(); break;
+            case 7: cout << "Goodbye!\n"; break;
+        }
+    } while (choice != 7);
+
+    return 0;
+}
+
+// Function Definitions
+
+void addTask() {
+    if (taskCount >= MAX_TASKS) {
+        cout << "Task limit reached!\n";
+        return;
+    }
+
+    cin.ignore();
+    Task t;
+    cout << "Enter title: ";
+    getline(cin, t.title);
+    cout << "Enter description: ";
+    getline(cin, t.description);
+    cout << "Enter priority (1-5): ";
+    cin >> t.priority;
+    cout << "Enter due date (DD MM YYYY): ";
+    cin >> t.dueDate.day >> t.dueDate.month >> t.dueDate.year;
+    t.completed = false;
+
+    tasks[taskCount++] = t;
+    cout << "Task added successfully.\n";
+}
+
+void displayTasks() {
+    if (taskCount == 0) {
+        cout << "No tasks to show.\n";
+        return;
+    }
+
+    cout << "\nAll Tasks:\n";
+    for (int i = 0; i < taskCount; i++) {
+        cout << "Task #" << (i + 1) << ":\n";
+        printTask(tasks[i]);
+        cout << endl;
+    }
+}
+
+void printTask(const Task& task) {
+    cout << "Title: " << task.title << endl;
+    cout << "Description: " << task.description << endl;
+    cout << "Priority: " << task.priority << endl;
+    cout << "Due Date: " << task.dueDate.day << "/" << task.dueDate.month << "/" << task.dueDate.year << endl;
+    cout << "Status: " << (task.completed ? "Completed" : "Pending") << endl;
+}
+
+void markTask() {
+    displayTasks();
+    int index;
+    cout << "Enter task number to toggle status: ";
+    cin >> index;
+
+    if (index < 1 || index > taskCount) {
+        cout << "Invalid task number.\n";
+        return;
+    }
+
+    tasks[index - 1].completed = !tasks[index - 1].completed;
+    cout << "Task status updated.\n";
+}
+
+void filterTasks() {
+    char status;
+    cout << "Filter by (C)ompleted or (P)ending? ";
+    cin >> status;
+
+    status = tolower(status);
+    bool found = false;
+
+    for (int i = 0; i < taskCount; i++) {
+        if ((status == 'c' && tasks[i].completed) || (status == 'p' && !tasks[i].completed)) {
+            printTask(tasks[i]);
+            cout << endl;
+            found = true;
+        }
+    }
+
+    if (!found) {
+        cout << "No matching tasks.\n";
+    }
+}
+
+void productivityReport() {
+    int completedCount = 0;
+
+    for (int i = 0; i < taskCount; i++) {
+        if (tasks[i].completed) {
+            completedCount++;
+        }
+    }
+
+    cout << "You have completed " << completedCount << " out of " << taskCount << " tasks.\n";
+}
+
+// Helper to compare dates
+bool compareDates(const Date& a, const Date& b) {
+    if (a.year != b.year) return a.year < b.year;
+    if (a.month != b.month) return a.month < b.month;
+    return a.day < b.day;
+}
+
+// Overloaded == for dates
+bool operator==(const Date& a, const Date& b) {
+    return a.day == b.day && a.month == b.month && a.year == b.year;
+}
+
+// Task sorting
+void sortTasks() {
+    if (taskCount == 0) {
+        cout << "No tasks to sort.\n";
+        return;
+    }
+
+    cout << "Sort tasks by:\n";
+    cout << "1. Due Date\n";
+    cout << "2. Priority\n";
+    cout << "Enter choice (1 or 2): ";
+    int choice;
+    cin >> choice;
+
+    for (int i = 0; i < taskCount - 1; i++) {
+        for (int j = i + 1; j < taskCount; j++) {
+            bool shouldSwap = false;
+            if (choice == 1) {
+                if (compareDates(tasks[j].dueDate, tasks[i].dueDate)) {
+                    shouldSwap = true;
+                } else if (tasks[j].dueDate == tasks[i].dueDate && tasks[j].priority > tasks[i].priority) {
+                    shouldSwap = true;
+                }
+            } else if (choice == 2) {
+                if (tasks[j].priority > tasks[i].priority) {
+                    shouldSwap = true;
+                } else if (tasks[j].priority == tasks[i].priority && compareDates(tasks[j].dueDate, tasks[i].dueDate)) {
+                    shouldSwap = true;
+                }
+            }
+
+            if (shouldSwap) {
+                Task temp = tasks[i];
+                tasks[i] = tasks[j];
+                tasks[j] = temp;
+            }
+        }
+    }
+
+    cout << "Tasks sorted successfully.\n";
+}
