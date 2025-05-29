@@ -3,6 +3,16 @@
 #include <limits> // for input validation
 using namespace std;
 
+/*
+    Midterm Feedback Summary
+
+    Overall everything looks great! Great Job!
+    The one thing you seemed to miss was the .cpp extension on your file.
+    I will leave feedback below where applicable.
+*/
+
+// Your definitions are clear and grouped nicely, very easy to read - great work
+
 // Structs
 struct Date {
     int day;
@@ -20,7 +30,7 @@ struct Task {
 
 // Global task list
 const int MAX_TASKS = 100;
-Task tasks[MAX_TASKS];
+Task tasks[MAX_TASKS]; // Good way to handle this for an array
 int taskCount = 0;
 
 // Function Prototypes
@@ -47,7 +57,7 @@ int main() {
         cout << "6. Sort Tasks\n";
         cout << "7. Exit\n";
         cout << "Choose an option: ";
-        cin >> choice;
+        cin >> choice; 
 
         // Input validation
         while (cin.fail() || choice < 1 || choice > 7) {
@@ -56,7 +66,7 @@ int main() {
             cout << "Invalid input. Try again: ";
             cin >> choice;
         }
-
+        // Nice compact switch here
         switch (choice) {
             case 1: addTask(); break;
             case 2: displayTasks(); break;
@@ -65,7 +75,7 @@ int main() {
             case 5: productivityReport(); break;
             case 6: sortTasks(); break;
             case 7: cout << "Goodbye!\n"; break;
-        }
+        } // Always having a default clause is good practice so you know when you get unexpected input
     } while (choice != 7);
 
     return 0;
@@ -86,7 +96,7 @@ void addTask() {
     cout << "Enter description: ";
     getline(cin, t.description);
     cout << "Enter priority (1-5): ";
-    cin >> t.priority;
+    cin >> t.priority; // For something like this you might consider taking input as a string, checking the input is correct, then assign to struct members. This is a way to validate input safely
     cout << "Enter due date (DD MM YYYY): ";
     cin >> t.dueDate.day >> t.dueDate.month >> t.dueDate.year;
     t.completed = false;
@@ -108,7 +118,7 @@ void displayTasks() {
         cout << endl;
     }
 }
-
+// Nice, concise function here
 void printTask(const Task& task) {
     cout << "Title: " << task.title << endl;
     cout << "Description: " << task.description << endl;
@@ -190,7 +200,7 @@ void sortTasks() {
     cout << "Enter choice (1 or 2): ";
     int choice;
     cin >> choice;
-
+    // Nice job here
     for (int i = 0; i < taskCount - 1; i++) {
         for (int j = i + 1; j < taskCount; j++) {
             bool shouldSwap = false;
