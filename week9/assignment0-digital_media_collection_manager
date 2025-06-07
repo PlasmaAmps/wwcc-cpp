@@ -1,0 +1,219 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <memory>
+#include <algorithm>
+#include <numeric>
+#include <functional>
+
+using namespace std;
+
+// Base MediaItem class
+class MediaItem {
+protected:
+    string title;
+    string creator;
+    int year;
+    double rating;
+    int length;
+    vector<string> genres;
+    vector<string> tags;
+    int accessCount;
+    string dateAdded;
+
+public:
+    MediaItem(string t, string c, int y, double r, int len,
+              vector<string> g, vector<string> tag, int a, string d)
+        : title(t), creator(c), year(y), rating(r), length(len),
+          genres(g), tags(tag), accessCount(a), dateAdded(d) {}
+
+    virtual ~MediaItem() = default;
+    virtual void printInfo() const = 0;
+    virtual string getType() const = 0;
+
+    string getTitle() const { return title; }
+    string getCreator() const { return creator; }
+    int getYear() const { return year; }
+    double getRating() const { return rating; }
+    int getAccessCount() const { return accessCount; }
+    const vector<string>& getGenres() const { return genres; }
+};
+
+// Movie
+class Movie : public MediaItem {
+    string director;
+    string studio;
+
+public:
+    Movie(string t, string d, int y, double r, int runtime, vector<string> g,
+          vector<string> tag, int a, string date, string studio)
+        : MediaItem(t, d, y, r, runtime, g, tag, a, date),
+          director(d), studio(studio) {}
+
+    void printInfo() const override {
+        cout << "[MOVIE] " << title << " (" << year << ") "
+             << rating << "/5\n"
+             << "        Director: " << director << " | " << length << " min\n\n";
+    }
+
+    string getType() const override { return "Movie"; }
+};
+
+// Song
+class Song : public MediaItem {
+    string album;
+    int playCount;
+
+public:
+    Song(string t, string a, int y, double r, int duration,
+         vector<string> g, vector<string> tag, int ac, string date,
+         string album, int playCt)
+        : MediaItem(t, a, y, r, duration, g, tag, ac, date),
+          album(album), playCount(playCt) {}
+
+    void printInfo() const override {
+        cout << "[SONG] " << title << " (" << year << ") "
+             << rating << "/5\n"
+             << "       Artist: " << creator << " | " << length << " sec | Album: " << album
+             << " | Plays: " << playCount << "\n\n";
+    }
+
+    string getType() const override { return "Song"; }
+};
+
+// Book
+class Book : public MediaItem {
+    string publisher;
+    double progress;
+
+public:
+    Book(string t, string a, int y, double r, int pages,
+         vector<string> g, vector<string> tag, int ac, string date,
+         string publisher, double prog)
+        : MediaItem(t, a, y, r, pages, g, tag, ac, date),
+          publisher(publisher), progress(prog) {}
+
+    void printInfo() const override {
+        cout << "[BOOK] " << title << " (" << year << ") "
+             << rating << "/5\n"
+             << "       Author: " << creator << " | " << length << " pages | " << progress << "% read\n\n";
+    }
+
+    string getType() const override { return "Book"; }
+};
+
+// MediaCollection class
+class MediaCollection {
+private:
+    vector<unique_ptr<MediaItem>> collection;
+
+public:
+    void addMovie() {
+        collection.push_back(make_unique<Movie>(
+            "Star Wars: A New Hope", "George Lucas", 1977, 5.0, 121,
+            vector<string>{"Sci-Fi"}, vector<string>{"space", "classic"}, 20, "2024-06-01", "Lucasfilm"));
+    }
+
+    void addSong() {
+        collection.push_back(make_unique<Song>(
+            "Bohemian Rhapsody", "Queen", 1975, 4.8, 355,
+            vector<string>{"Rock"}, vector<string>{"classic"}, 42, "2024-06-01", "A Night at the Opera", 100));
+    }
+
+    void addBook() {
+        collection.push_back(make_unique<Book>(
+            "The Fault in Our Stars", "John Green", 2012, 4.2, 313,
+            vector<string>{"Romance"}, vector<string>{"YA", "tearjerker"}, 15, "2024-06-01", "Penguin", 67.0));
+    }
+
+    void displayCollectionSortedByTitle() {
+        vector<MediaItem*> sorted;
+        for (const auto& item : collection) sorted.push_back(item.get());
+
+        sort(sorted.begin(), sorted.end(), [](MediaItem* a, MediaItem* b) {
+            return a->getTitle() < b->getTitle();
+        });
+
+        for (auto* item : sorted) {
+            item->printInfo();
+        }
+    }
+
+    void searchByTitle(const string& term) {
+        vector<MediaItem*> results;
+        for (const auto& item : collection) {
+            if (item->getTitle().find(term) != string::npos) {
+                results.push_back(item.get());
+            }
+        }
+
+        if (results.empty()) {
+            cout << "No matches found.\n";
+            return;
+        }
+
+        cout << "Found " << results.size() << " items:\n";
+        for (auto* item : results) {
+            item->printInfo();
+        }
+    }
+
+    void displayStats() {
+        int movies = count_if(collection.begin(), collection.end(), [](const auto& item) {
+            return item->getType() == "Movie";
+        });
+        int songs = count_if(collection.begin(), collection.end(), [](const auto& item) {
+            return item->getType() == "Song";
+        });
+        int books = count_if(collection.begin(), collection.end(), [](const auto& item) {
+            return item->getType() == "Book";
+        });
+
+        double avgRating = accumulate(collection.begin(), collection.end(), 0.0,
+            [](double sum, const auto& item) {
+                return sum + item->getRating();
+            }) / collection.size();
+
+        cout << "Collection Summary: " << collection.size() << " items\n";
+        cout << "- Movies: " << movies << "\n";
+        cout << "- Songs: " << songs << "\n";
+        cout << "- Books: " << books << "\n";
+        cout << "Average rating: " << avgRating << "/5\n\n";
+    }
+};
+
+int main() {
+    MediaCollection mc;
+    mc.addMovie();
+    mc.addSong();
+    mc.addBook();
+
+    int choice;
+    while (true) {
+        cout << "Main Menu:\n"
+             << "1. View Collection\n"
+             << "2. Search Items\n"
+             << "3. View Statistics\n"
+             << "4. Exit\n"
+             << "Choice: ";
+        cin >> choice;
+        cin.ignore();
+
+        if (choice == 1) {
+            mc.displayCollectionSortedByTitle();
+        } else if (choice == 2) {
+            string term;
+            cout << "Enter search term: ";
+            getline(cin, term);
+            mc.searchByTitle(term);
+        } else if (choice == 3) {
+            mc.displayStats();
+        } else if (choice == 4) {
+            break;
+        } else {
+            cout << "Invalid choice.\n";
+        }
+    }
+
+    return 0;
+}
