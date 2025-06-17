@@ -1,0 +1,11 @@
+=== Dragon Quest Game Statistics ===
+Player Race: Kobold
+Player Class: Rogue
+Final HP: 0/19
+Game Outcome: Defeat
+Strength: 9
+Dexterity: 14
+Constitution: 9
+Intelligence: 12
+Wisdom: 10
+Charisma: 11
